@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.*;
 
 public class Basic {
 
+
     @Test
     public void validate_get_all_workspaces_successfully() {
         given()
