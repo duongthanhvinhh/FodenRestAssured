@@ -19,7 +19,7 @@ public class PlayListTests {
     RequestSpecification requestSpecification;
     ResponseSpecification responseSpecification;
 
-    String accessToken = "BQDxcdWArcPgYiSjcLud_TIMjc7kK2_3O94q1HdXKEE4aHQpf1nAKSiL0_hOqavh0eAKjhO9-RVGX0hu_CkHzocpaJLL7uxpsXzyDEEUrcdfpfSai9aBaCLSeewIXdRrIbTw_F_wZVb1L7OxUTvqpuqeSZZSVRCQSR3dCU8_aqKunJK1B0wbSwT_4Gu-SY_EoZFGV00-VVlaZsTN_pi6VZaKfKo6h6D80jfwz_WgPV4mYAu_MmKzWlqmowDmeqwPsLPBfT3TOFtMgs7i-R0h7EQU";
+    String accessToken = "BQDVktWKOPkRxHmCWLJVdzpFm2mv1VpQiRQSFJCoDW8NkYrn5e7fx0aK549E2dIk2pEUU-6tUlaelFdLOHi6VFvY8alG_Oz_Oq36IP0VrlN-nZXlt4YNNLMIwJWt7lOFIuS3JBkirB3fVAh_xUo6InW8f_0iLKkciykU0sAWJdCREexyMvx3_ezwg-kIU4Bf2EO6NYyMg32PKTdHTaA-1gPfU65hScVzbpcGrY4Fg8HQTkdQOcrQrvSwgV_KmQiUnK1kJnumjpg2UU4J5W2T6ndc";
 
     @BeforeClass
     public void beforeClass(){
@@ -84,14 +84,14 @@ public class PlayListTests {
 
     @Test
     public void updatePlayList(){
-        String payload = "{\n" +
-                "    \"name\": \"Top 5 Europe music songs\",\n" +
-                "    \"description\": \"Top 5 music songs last week in Europe.\",\n" +
-                "    \"public\": false\n" +
-                "}";
+
+        PlayList requestPlayList = new PlayList();
+        requestPlayList.setName("Top 5 Europe music songs");
+        requestPlayList.setDescription("Top 5 music songs last week in Europe.");
+        requestPlayList.setPublic(false);
         given(requestSpecification)
                 .when()
-                .body(payload)
+                .body(requestPlayList)
                 .put("/playlists/3pc06TbWbIgUD9tRABoeGR")
                 .then()
                 .spec(responseSpecification)
@@ -102,13 +102,17 @@ public class PlayListTests {
 
     @Test
     public void shouldNotBeAbleToCreatePlayListWithoutName(){
-        String payload = "{\n" +
-                "    \"name\": \"\",\n" +
-                "    \"description\": \"Top 10 songs that I really like.\",\n" +
-                "    \"public\": true\n" +
-                "}";
+//        String payload = "{\n" +
+//                "    \"name\": \"\",\n" +
+//                "    \"description\": \"Top 10 songs that I really like.\",\n" +
+//                "    \"public\": true\n" +
+//                "}";
+        PlayList requestPlayList = new PlayList();
+        requestPlayList.setName("");
+        requestPlayList.setDescription("Top 5 music songs last week in Europe.");
+        requestPlayList.setPublic(false);
         given(requestSpecification)
-                .body(payload)
+                .body(requestPlayList)
                 .when()
                 .post("/users/31c3hrbpm75afpco7533kex5fhyi/playlists")
                 .then()
@@ -121,18 +125,22 @@ public class PlayListTests {
 
     @Test
     public void shouldNotBeAbleToCreatePlayListWithExpiredToken(){
-        String payload = "{\n" +
-                "    \"name\": \"New PlayList\",\n" +
-                "    \"description\": \"Top 10 songs that I really like.\",\n" +
-                "    \"public\": true\n" +
-                "}";
+//        String payload = "{\n" +
+//                "    \"name\": \"New PlayList\",\n" +
+//                "    \"description\": \"Top 10 songs that I really like.\",\n" +
+//                "    \"public\": true\n" +
+//                "}";
+        PlayList requestPlayList = new PlayList();
+        requestPlayList.setName("Foden PlayList");
+        requestPlayList.setDescription("Top 5 music songs last week in Europe.");
+        requestPlayList.setPublic(false);
         String expiredToken = "BQDxcdWArcPgYiSjcLud_FIMjc7kK2_3O94q1HdXKEE4aHQpf1nAKSiL0_hOqavh0eAKjhO9-RVGX0hu_CkHzocpaJLL7uxpsXzyDEEUrcdfpfSai9aBaCLSeewIXdRrIbTw_F_wZVb1L7OxUTvqpuqeSZZSVRCQSR3dCU8_aqKunJK1B0wbSwT_4Gu-SY_EoZFGV00-VVlaZsTN_pi6VZaKfKo6h6D80jfwz_WgPV4mYAu_MmKzWlqmowDmeqwPsLPBfT3TOFtMgs7i-R0h7EQU";
         given()
                 .baseUri("https://api.spotify.com")
                 .basePath("/v1")
                 .header("Authorization", "Bearer " + expiredToken)
                 .contentType(ContentType.JSON)
-                .body(payload)
+                .body(requestPlayList)
                 .when()
                 .post("/users/31c3hrbpm75afpco7533kex5fhyi/playlists")
                 .then()
