@@ -1,11 +1,15 @@
 package org.foden.api;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.foden.pojo.PlayList;
 
+import java.util.HashMap;
+
 import static io.restassured.RestAssured.given;
-import static org.foden.api.SpecBuilder.getRequestSpec;
-import static org.foden.api.SpecBuilder.getResponseSpec;
+import static org.foden.api.Route.API;
+import static org.foden.api.Route.TOKEN;
+import static org.foden.api.SpecBuilder.*;
 
 public class RestResource {
 
@@ -26,6 +30,17 @@ public class RestResource {
                 .body(request)
                 .when()
                 .post(path)
+                .then()
+                .spec(getResponseSpec())
+                .extract()
+                .response();
+    }
+
+    public static Response postAccount(HashMap<String, String> formParams){
+        return given(getAccountRequestSpec())
+                .formParams(formParams)
+                .when()
+                .post(API + TOKEN)
                 .then()
                 .spec(getResponseSpec())
                 .extract()
