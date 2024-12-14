@@ -3,7 +3,7 @@
 <suite name="Suite" data-provider-thread-count="9" >
     <test verbose="2" preserve-order="true" name="Test" thread-count="4" parallel="methods">
         <classes>
-            <class name="org.foden.tests.PlayListTests"/>
+            <class name="org.foden.tests.PlaylistTests"/>
         </classes>
     </test>
 </suite>

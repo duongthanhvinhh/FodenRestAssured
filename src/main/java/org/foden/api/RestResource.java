@@ -1,8 +1,6 @@
 package org.foden.api;
 
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.foden.pojo.PlayList;
 
 import java.util.HashMap;
 
