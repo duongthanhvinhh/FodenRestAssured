@@ -85,6 +85,7 @@ public class PlaylistTests {
         assertStatusCode(response.statusCode(), 200);
     }
 
+    @Step
     public Playlist playlistBuilder(String name, String description, boolean _public){
         return Playlist.builder()
                 .name(name)
@@ -93,12 +94,14 @@ public class PlaylistTests {
                 .build();
     }
 
+    @Step
     public void assertPlaylistEqual(Playlist responsePlaylist, Playlist requestPlaylist){
         assertThat(responsePlaylist.getName(), equalTo(requestPlaylist.getName()));
         assertThat(responsePlaylist.getDescription(), equalTo(requestPlaylist.getDescription()));
         assertThat(responsePlaylist.get_public(), equalTo(requestPlaylist.get_public()));
     }
 
+    @Step
     public void assertStatusCode(int actualStatusCode, int expectedStatusCode){
         assertThat(actualStatusCode, equalTo(expectedStatusCode));
     }

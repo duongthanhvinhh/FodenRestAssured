@@ -1,5 +1,6 @@
 package org.foden.api;
 
+import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.config.HeaderConfig;
@@ -20,6 +21,7 @@ public class SpecBuilder {
                 .setBasePath(BASE_PATH)
                 .addHeader("Authorization", "Bearer " + getToken())
                 .setContentType(ContentType.JSON)
+                .addFilter(new AllureRestAssured())
                 .log(LogDetail.ALL)
                 .build()
                 .config(config().headerConfig(HeaderConfig.headerConfig().overwriteHeadersWithName("Authorization")));
@@ -29,6 +31,7 @@ public class SpecBuilder {
         return new RequestSpecBuilder()
                 .setBaseUri(BASE_URI_ACCOUNTS)
                 .setContentType(ContentType.URLENC)
+                .addFilter(new AllureRestAssured())
                 .log(LogDetail.ALL)
                 .build();
     }
