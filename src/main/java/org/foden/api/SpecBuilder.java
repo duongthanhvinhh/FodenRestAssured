@@ -10,6 +10,7 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 
 import static io.restassured.RestAssured.config;
+import static io.restassured.RestAssured.oauth2;
 import static org.foden.api.Route.*;
 import static org.foden.api.TokenManager.getToken;
 
@@ -19,7 +20,8 @@ public class SpecBuilder {
         return new RequestSpecBuilder()
                 .setBaseUri(BASE_URI_API)
                 .setBasePath(BASE_PATH)
-                .addHeader("Authorization", "Bearer " + getToken())
+                .setAuth(oauth2(getToken()))
+//                .addHeader("Authorization", "Bearer " + getToken())
                 .setContentType(ContentType.JSON)
                 .addFilter(new AllureRestAssured())
                 .log(LogDetail.ALL)

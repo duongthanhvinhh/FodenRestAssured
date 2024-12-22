@@ -24,7 +24,8 @@ public class RestResource {
 
     public static Response post(String token, String path ,Object request){
         return given(getRequestSpec())
-                .header("Authorization", "Bearer " + token)
+                .auth().oauth2(token)
+//                .header("Authorization", "Bearer " + token)
                 .body(request)
                 .when()
                 .post(path)
