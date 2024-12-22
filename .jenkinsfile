@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from repository
+                checkout scm
+            }
+        }
+
+        stage('Unlock git-crypt') {
+            steps {
+                // Unlock git-crypt
+                withCredentials([file(credentialsId: 'git-crypt-key', variable: 'GIT_CRYPT_KEY')]) {
+                    sh 'git-crypt unlock $GIT_CRYPT_KEY'
+                }
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                // Run Maven build and tests
+                sh 'mvn clean test'
+            }
+        }
+    }
+}

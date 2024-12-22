@@ -2,16 +2,19 @@ package org.foden.tests;
 
 import io.qameta.allure.*;
 import io.restassured.response.Response;
+import org.foden.api.StatusCode;
 import org.foden.api.applicationApi.PlaylistApi;
 import org.foden.pojo.Error;
 import org.foden.pojo.Playlist;
 import org.foden.utils.DataLoader;
 import org.testng.annotations.Test;
 
+import static org.foden.utils.FakerUtils.generateDescription;
+import static org.foden.utils.FakerUtils.generateName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class PlaylistTests {
+public class PlaylistTests extends BaseTest{
 
 
     @Feature("Play List")
@@ -22,9 +25,9 @@ public class PlaylistTests {
     @Description("Verify can create a playlist successfully via api request")
     @Owner("Foden Duong")
     public void createPlayList(){
-        Playlist requestPlaylist = playlistBuilder("Foden Like It", "Top 10 songs that I really like.", true);
+        Playlist requestPlaylist = playlistBuilder(generateName(), generateDescription(), true);
         Response response = PlaylistApi.post(requestPlaylist);
-        assertStatusCode(response.statusCode(), 201);
+        assertStatusCode(response.statusCode(), StatusCode.CODE_201);
         assertPlaylistEqual(response.as(Playlist.class), requestPlaylist);
     }
 
@@ -36,10 +39,10 @@ public class PlaylistTests {
     @Description("Verify should not be able to create a playlist without name")
     @Owner("Foden Duong")
     public void shouldNotBeAbleToCreatePlayListWithoutName(){
-        Playlist requestPlaylist = playlistBuilder("", "Top 5 music songs last week in Europe", false);
+        Playlist requestPlaylist = playlistBuilder("", generateDescription(), false);
         Response response = PlaylistApi.post(requestPlaylist);
-        assertStatusCode(response.statusCode(), 400);
-        assertError(response.as(Error.class), 400, "Missing required field: name");
+        assertStatusCode(response.statusCode(), StatusCode.CODE_400);
+        assertError(response.as(Error.class), StatusCode.CODE_400);
     }
 
     @Feature("Play List")
@@ -50,11 +53,11 @@ public class PlaylistTests {
     @Description("Verify should not be able to create a playlist with expired token")
     @Owner("Foden Duong")
     public void shouldNotBeAbleToCreatePlayListWithExpiredToken(){
-        Playlist requestPlaylist = playlistBuilder("Foden Playlists", "Top 5 music songs last week in Europe.", false);
+        Playlist requestPlaylist = playlistBuilder(generateName(), generateDescription(), false);
         String expiredToken = "1BQDxcdWArcPgYiSjcLud_FIMjc7kK2_3O94q1HdXKEE4aHQpf1nAKSiL0_hOqavh0eAKjhO9-RVGX0hu_CkHzocpaJLL7uxpsXzyDEEUrcdfpfSai9aBaCLSeewIXdRrIbTw_F_wZVb1L7OxUTvqpuqeSZZSVRCQSR3dCU8_aqKunJK1B0wbSwT_4Gu-SY_EoZFGV00-VVlaZsTN_pi6VZaKfKo6h6D80jfwz_WgPV4mYAu_MmKzWlqmowDmeqwPsLPBfT3TOFtMgs7i-R0h7EQU";
         Response response = PlaylistApi.post(expiredToken ,requestPlaylist);
-        assertStatusCode(response.statusCode(), 401);
-        assertError(response.as(Error.class), 401, "Invalid access token");
+        assertStatusCode(response.statusCode(), StatusCode.CODE_401);
+        assertError(response.as(Error.class), StatusCode.CODE_401);
     }
 
     @Feature("Play List")
@@ -67,7 +70,7 @@ public class PlaylistTests {
     public void getPlayList(){
         Playlist requestPlaylist = playlistBuilder("Foden Like It", "Top 10 songs that I really like.", true);
         Response response = PlaylistApi.get(DataLoader.getInstance().getGetPlaylistId());
-        assertStatusCode(response.statusCode(), 200);
+        assertStatusCode(response.statusCode(), StatusCode.CODE_200);
         assertPlaylistEqual(response.as(Playlist.class), requestPlaylist);
 
     }
@@ -80,9 +83,9 @@ public class PlaylistTests {
     @Description("Verify should be able to update a playlist successfully via api request")
     @Owner("Foden Duong")
     public void updatePlayList(){
-        Playlist requestPlaylist = playlistBuilder("Top 5 Europe music songs", "Top 5 music songs last week in Europe.", false);
+        Playlist requestPlaylist = playlistBuilder(generateName(), generateDescription(), false);
         Response response = PlaylistApi.update(DataLoader.getInstance().getUpdatePlaylistId(), requestPlaylist);
-        assertStatusCode(response.statusCode(), 200);
+        assertStatusCode(response.statusCode(), StatusCode.CODE_200);
     }
 
     @Step
@@ -102,12 +105,12 @@ public class PlaylistTests {
     }
 
     @Step
-    public void assertStatusCode(int actualStatusCode, int expectedStatusCode){
-        assertThat(actualStatusCode, equalTo(expectedStatusCode));
+    public void assertStatusCode(int actualStatusCode, StatusCode statusCode){
+        assertThat(actualStatusCode, equalTo(statusCode.code));
     }
 
-    public void assertError(Error responseErr, int expectedStatusCode, String expectedMessage){
-        assertThat(responseErr.getError().getMessage(), equalTo(expectedMessage));
-        assertThat(responseErr.getError().getStatus(), equalTo(expectedStatusCode));
+    public void assertError(Error responseErr, StatusCode statusCode){
+        assertThat(responseErr.getError().getMessage(), equalTo(statusCode.message));
+        assertThat(responseErr.getError().getStatus(), equalTo(statusCode.code));
     }
 }

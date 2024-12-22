@@ -14,7 +14,7 @@ public class TokenManager {
     private static String accessToken;
     private static Instant expiryTime;
 
-    public static String getToken(){
+    public synchronized static String getToken(){
         try{
             if (accessToken == null || Instant.now().isAfter(expiryTime)){
                 System.out.println("Renewing token...");
