@@ -23,48 +23,13 @@ public class ConfigLoader {
         return configLoader;
     }
 
-    public String getUserId(){
-        String prop = properties.getProperty("user_id");
+    public String getProperty(String propertyName){
+        String prop = properties.getProperty(propertyName);
         if (Objects.nonNull(prop)){
             return prop;
         } else {
-            throw new RuntimeException("Property user_id is not specified in the config properties file");
+            throw new RuntimeException("Property " + propertyName + " is not specified in the config properties file !!!");
         }
     }
 
-    public String getClientId(){
-        String prop = properties.getProperty("client_id");
-        if (Objects.nonNull(prop)){
-            return prop;
-        } else {
-            throw new RuntimeException("Property client_id is not specified in the config properties file");
-        }
-    }
-
-    public String getClientSecret(){
-        String prop = properties.getProperty("client_secret");
-        if (Objects.nonNull(prop)){
-            return prop;
-        } else {
-            throw new RuntimeException("Property client_secret is not specified in the config properties file");
-        }
-    }
-
-    public String getGrantType(){
-        String prop = properties.getProperty("grant_type");
-        if (Objects.nonNull(prop)){
-            return prop;
-        } else {
-            throw new RuntimeException("Property grant_type is not specified in the config properties file");
-        }
-    }
-
-    public String getRefreshToken(){
-        String prop = properties.getProperty("refresh_token");
-        if (Objects.nonNull(prop)){
-            return prop;
-        } else {
-            throw new RuntimeException("Property refresh_token is not specified in the config properties file");
-        }
-    }
 }

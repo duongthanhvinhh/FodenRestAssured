@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.foden.api.RestResource;
 import org.foden.pojo.Playlist;
 import org.foden.utils.ConfigLoader;
+import org.foden.utils.DataManager;
 
 import static org.foden.api.Route.*;
 
@@ -12,12 +13,12 @@ public class PlaylistApi {
 
     @Step
     public static Response post(Playlist requestPlaylist){
-        return RestResource.post(USERS + "/" + ConfigLoader.getInstance().getUserId() + PLAYLISTS, requestPlaylist);
+        return RestResource.post(USERS + "/" + DataManager.getInstance().getData("user_id") + PLAYLISTS, requestPlaylist);
     }
 
     @Step
     public static Response post(String token , Playlist requestPlaylist){
-        return RestResource.post(token, USERS + "/" + ConfigLoader.getInstance().getUserId() + PLAYLISTS, requestPlaylist);
+        return RestResource.post(token, USERS + "/" + DataManager.getInstance().getData("user_id") + PLAYLISTS, requestPlaylist);
     }
 
     @Step

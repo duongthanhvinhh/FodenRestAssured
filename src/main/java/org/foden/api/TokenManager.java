@@ -3,6 +3,7 @@ package org.foden.api;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.foden.utils.ConfigLoader;
+import org.foden.utils.DataManager;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,10 +36,10 @@ public class TokenManager {
 
     private static Response renewToken(){
         HashMap<String, String> formParams = new HashMap<>();
-        formParams.put("client_id", ConfigLoader.getInstance().getClientId());
-        formParams.put("client_secret", ConfigLoader.getInstance().getClientSecret());
-        formParams.put("grant_type", ConfigLoader.getInstance().getGrantType());
-        formParams.put("refresh_token", ConfigLoader.getInstance().getRefreshToken());
+        formParams.put("client_id", DataManager.getInstance().getData("client_id"));
+        formParams.put("client_secret", DataManager.getInstance().getData("client_secret"));
+        formParams.put("grant_type", DataManager.getInstance().getData("grant_type"));
+        formParams.put("refresh_token", DataManager.getInstance().getData("refresh_token"));
 
         Response response = RestResource.postAccount(formParams);
 
