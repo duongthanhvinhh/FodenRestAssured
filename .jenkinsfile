@@ -2,6 +2,7 @@ pipeline {
     agent any
     parameters {
         string(name: 'XmlSuite', defaultValue: '', description: 'Test Suite (e.g., testng)')
+        gitParameter(name: 'BRANCH', type: 'PT_BRANCH', defaultValue: 'master', description: 'Select the branch to build')
     }
     tools {
         maven 'MAVEN_HOME' // Ensure this matches the Maven installation name in Jenkins
@@ -9,30 +10,66 @@ pipeline {
     }
     environment {
         ALLURE_RESULTS_DIR = "allure-results-${env.BUILD_NUMBER}"
+        PATH = "/usr/local/bin:${env.PATH}" // Ensure git-crypt is in the PATH
     }
-
     stages {
-        stage('Checkout') {
+        stage('Check git-crypt Path') {
             steps {
-                // Checkout code from repository
-                checkout scm
+                // Kiểm tra xem git-crypt có trong PATH không
+                sh 'which git-crypt || echo "git-crypt not found"'
+                sh 'echo $PATH'  // In ra PATH để kiểm tra sự tồn tại của git-crypt
             }
         }
-
         stage('Unlock git-crypt') {
             steps {
-                // Unlock git-crypt
                 withCredentials([file(credentialsId: 'git-crypt-key', variable: 'GIT_CRYPT_KEY')]) {
-                    sh 'git-crypt unlock $GIT_CRYPT_KEY'
+                    script {
+                        echo "Unlocking git-crypt with key file $GIT_CRYPT_KEY"
+                        sh 'git-crypt unlock $GIT_CRYPT_KEY'
+                        sh 'git-crypt status'  // Kiểm tra trạng thái git-crypt sau khi unlock
+                    }
                 }
             }
         }
-
+        stage('Checkout') {
+            steps {
+                // Checkout the selected branch from the Git repository
+                checkout([$class: 'GitSCM',
+                          branches: [[name: "${params.BRANCH}"]],
+                          doGenerateSubmoduleConfigurations: false,
+                          extensions: [
+                            [$class: 'PreCheckoutMerge', options: [fastForwardMode: 'NO_FF']] // Prevent merge conflicts
+                          ],
+                          submoduleCfg: [],
+                          userRemoteConfigs: [[url: 'https://github.com/duongthanhvinhh/FodenRestAssured']]
+                ])
+            }
+        }
         stage('Build and Test') {
             steps {
-                // Run Maven build and tests
-                sh 'mvn clean test -DsuiteXmlFile=${xmlSuite}.xml'
+                // Run Maven build and tests using the provided test suite
+                sh "mvn clean test -DsuiteXmlFile=${params.XmlSuite}.xml" // Use double quotes for variable substitution
             }
+        }
+        stage('Publish Allure Report') {
+            steps {
+                // Publish the Allure report after the tests are done
+                allure includeProperties: false, jdk: '', results: "${ALLURE_RESULTS_DIR}/**/allure-*.xml"
+            }
+        }
+    }
+    post {
+        always {
+            // Clean up any resources if necessary, e.g., delete temporary files
+            echo 'Cleaning up after the build...'
+        }
+        success {
+            // Actions to perform if the build is successful
+            echo 'Build and tests completed successfully.'
+        }
+        failure {
+            // Actions to perform if the build fails
+            echo 'Build or tests failed.'
         }
     }
 }
