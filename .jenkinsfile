@@ -1,5 +1,15 @@
 pipeline {
     agent any
+    parameters {
+        string(name: 'XmlSuite', defaultValue: '', description: 'Test Suite (e.g., testng)')
+    }
+    tools {
+        maven 'MAVEN_HOME' // Ensure this matches the Maven installation name in Jenkins
+        allure 'ALLURE_REPORT'
+    }
+    environment {
+        ALLURE_RESULTS_DIR = "allure-results-${env.BUILD_NUMBER}"
+    }
 
     stages {
         stage('Checkout') {
@@ -21,7 +31,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 // Run Maven build and tests
-                sh 'mvn clean test'
+                sh 'mvn clean test -DsuiteXmlFile=${xmlSuite}.xml'
             }
         }
     }
